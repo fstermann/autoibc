@@ -1,4 +1,4 @@
-[![build status](https://github.com/fstermann/ezr/actions/workflows/main.yml/badge.svg)](https://github.com/fstermann/ezr/actions/workflows/main.yml)
+[![build status](https://github.com/fstermann/autoibc/actions/workflows/main.yml/badge.svg)](https://github.com/fstermann/autoibc/actions/workflows/main.yml)
 [![LMU: Munich](https://img.shields.io/badge/LMU-Munich-009440.svg)](https://www.en.statistik.uni-muenchen.de/index.html)
 ![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
 
