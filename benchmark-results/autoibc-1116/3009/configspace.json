@@ -1,0 +1,529 @@
+{
+  "name": "AutoIBC",
+  "hyperparameters": [
+    {
+      "name": "classification",
+      "type": "categorical",
+      "choices": [
+        "AutoRandomForest",
+        "AutoGradientBoosting",
+        "AutoSGD"
+      ],
+      "default": "AutoRandomForest",
+      "weights": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "imputation",
+      "type": "categorical",
+      "choices": [
+        "AutoSimpleImputer",
+        "AutoKNNImputer"
+      ],
+      "default": "AutoSimpleImputer",
+      "weights": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "sampling",
+      "type": "categorical",
+      "choices": [
+        "AutoSMOTE",
+        "AutoSMOTEENN",
+        "AutoSMOTETomek"
+      ],
+      "default": "AutoSMOTE",
+      "weights": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scaling",
+      "type": "categorical",
+      "choices": [
+        "AutoStandardScaler",
+        "None"
+      ],
+      "default": "AutoStandardScaler",
+      "weights": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "AutoGradientBoosting:l2_regularization",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-10,
+      "upper": 1.0,
+      "default": 1e-10
+    },
+    {
+      "name": "AutoGradientBoosting:learning_rate",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 0.01,
+      "upper": 1.0,
+      "default": 0.1
+    },
+    {
+      "name": "AutoGradientBoosting:max_leaf_nodes",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 3,
+      "upper": 2047,
+      "default": 31
+    },
+    {
+      "name": "AutoGradientBoosting:min_samples_leaf",
+      "type": "uniform_int",
+      "log": true,
+      "lower": 1,
+      "upper": 200,
+      "default": 20
+    },
+    {
+      "name": "AutoGradientBoosting:n_iter_no_change",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 20,
+      "default": 10
+    },
+    {
+      "name": "AutoGradientBoosting:validation_fraction",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.01,
+      "upper": 0.4,
+      "default": 0.1
+    },
+    {
+      "name": "AutoKNNImputer:n_neighbors",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 25,
+      "default": 5
+    },
+    {
+      "name": "AutoRandomForest:bootstrap",
+      "type": "categorical",
+      "choices": [
+        "True",
+        "False"
+      ],
+      "default": "True",
+      "weights": null
+    },
+    {
+      "name": "AutoRandomForest:class_weight",
+      "type": "categorical",
+      "choices": [
+        "balanced",
+        "balanced_subsample",
+        "None"
+      ],
+      "default": "None",
+      "weights": null
+    },
+    {
+      "name": "AutoRandomForest:criterion",
+      "type": "categorical",
+      "choices": [
+        "gini",
+        "entropy"
+      ],
+      "default": "gini",
+      "weights": null
+    },
+    {
+      "name": "AutoRandomForest:max_features",
+      "type": "uniform_float",
+      "log": false,
+      "lower": 0.0,
+      "upper": 1.0,
+      "default": 0.5
+    },
+    {
+      "name": "AutoRandomForest:min_samples_leaf",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 20,
+      "default": 1
+    },
+    {
+      "name": "AutoRandomForest:min_samples_split",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 2,
+      "upper": 20,
+      "default": 2
+    },
+    {
+      "name": "AutoSGD:alpha",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-07,
+      "upper": 0.1,
+      "default": 0.0001
+    },
+    {
+      "name": "AutoSGD:average",
+      "type": "categorical",
+      "choices": [
+        "True",
+        "False"
+      ],
+      "default": "False",
+      "weights": null
+    },
+    {
+      "name": "AutoSGD:class_weight",
+      "type": "categorical",
+      "choices": [
+        "balanced",
+        "None"
+      ],
+      "default": "None",
+      "weights": null
+    },
+    {
+      "name": "AutoSGD:epsilon",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-05,
+      "upper": 0.1,
+      "default": 0.0001
+    },
+    {
+      "name": "AutoSGD:eta0",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-07,
+      "upper": 0.1,
+      "default": 0.01
+    },
+    {
+      "name": "AutoSGD:l1_ratio",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-09,
+      "upper": 1.0,
+      "default": 0.15
+    },
+    {
+      "name": "AutoSGD:learning_rate",
+      "type": "categorical",
+      "choices": [
+        "optimal",
+        "invscaling",
+        "constant"
+      ],
+      "default": "invscaling",
+      "weights": null
+    },
+    {
+      "name": "AutoSGD:loss",
+      "type": "categorical",
+      "choices": [
+        "hinge",
+        "log_loss",
+        "modified_huber",
+        "squared_hinge",
+        "perceptron"
+      ],
+      "default": "log_loss",
+      "weights": null
+    },
+    {
+      "name": "AutoSGD:penalty",
+      "type": "categorical",
+      "choices": [
+        "l1",
+        "l2",
+        "elasticnet"
+      ],
+      "default": "l2",
+      "weights": null
+    },
+    {
+      "name": "AutoSGD:power_t",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-05,
+      "upper": 1.0,
+      "default": 0.5
+    },
+    {
+      "name": "AutoSGD:tol",
+      "type": "uniform_float",
+      "log": true,
+      "lower": 1e-05,
+      "upper": 0.1,
+      "default": 0.0001
+    },
+    {
+      "name": "AutoSMOTE:k_neighbors",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 25,
+      "default": 5
+    },
+    {
+      "name": "AutoSMOTEENN:k_neighbors",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 25,
+      "default": 5
+    },
+    {
+      "name": "AutoSMOTEENN:n_neighbors",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 25,
+      "default": 3
+    },
+    {
+      "name": "AutoSMOTETomek:k_neighbors",
+      "type": "uniform_int",
+      "log": false,
+      "lower": 1,
+      "upper": 25,
+      "default": 5
+    },
+    {
+      "name": "AutoSimpleImputer:strategy",
+      "type": "categorical",
+      "choices": [
+        "mean",
+        "median",
+        "most_frequent"
+      ],
+      "default": "mean",
+      "weights": null
+    },
+    {
+      "name": "AutoStandardScaler:with_mean",
+      "type": "categorical",
+      "choices": [
+        "True",
+        "False"
+      ],
+      "default": "True",
+      "weights": null
+    },
+    {
+      "name": "AutoStandardScaler:with_std",
+      "type": "categorical",
+      "choices": [
+        "True",
+        "False"
+      ],
+      "default": "True",
+      "weights": null
+    }
+  ],
+  "conditions": [
+    {
+      "child": "AutoGradientBoosting:l2_regularization",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoGradientBoosting"
+    },
+    {
+      "child": "AutoGradientBoosting:learning_rate",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoGradientBoosting"
+    },
+    {
+      "child": "AutoGradientBoosting:max_leaf_nodes",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoGradientBoosting"
+    },
+    {
+      "child": "AutoGradientBoosting:min_samples_leaf",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoGradientBoosting"
+    },
+    {
+      "child": "AutoGradientBoosting:n_iter_no_change",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoGradientBoosting"
+    },
+    {
+      "child": "AutoGradientBoosting:validation_fraction",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoGradientBoosting"
+    },
+    {
+      "child": "AutoRandomForest:bootstrap",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoRandomForest"
+    },
+    {
+      "child": "AutoRandomForest:class_weight",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoRandomForest"
+    },
+    {
+      "child": "AutoRandomForest:criterion",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoRandomForest"
+    },
+    {
+      "child": "AutoRandomForest:max_features",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoRandomForest"
+    },
+    {
+      "child": "AutoRandomForest:min_samples_leaf",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoRandomForest"
+    },
+    {
+      "child": "AutoRandomForest:min_samples_split",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoRandomForest"
+    },
+    {
+      "child": "AutoSGD:alpha",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:average",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:class_weight",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:epsilon",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:eta0",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:l1_ratio",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:learning_rate",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:loss",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:penalty",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:power_t",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoSGD:tol",
+      "parent": "classification",
+      "type": "EQ",
+      "value": "AutoSGD"
+    },
+    {
+      "child": "AutoKNNImputer:n_neighbors",
+      "parent": "imputation",
+      "type": "EQ",
+      "value": "AutoKNNImputer"
+    },
+    {
+      "child": "AutoSimpleImputer:strategy",
+      "parent": "imputation",
+      "type": "EQ",
+      "value": "AutoSimpleImputer"
+    },
+    {
+      "child": "AutoSMOTE:k_neighbors",
+      "parent": "sampling",
+      "type": "EQ",
+      "value": "AutoSMOTE"
+    },
+    {
+      "child": "AutoSMOTEENN:k_neighbors",
+      "parent": "sampling",
+      "type": "EQ",
+      "value": "AutoSMOTEENN"
+    },
+    {
+      "child": "AutoSMOTEENN:n_neighbors",
+      "parent": "sampling",
+      "type": "EQ",
+      "value": "AutoSMOTEENN"
+    },
+    {
+      "child": "AutoSMOTETomek:k_neighbors",
+      "parent": "sampling",
+      "type": "EQ",
+      "value": "AutoSMOTETomek"
+    },
+    {
+      "child": "AutoStandardScaler:with_mean",
+      "parent": "scaling",
+      "type": "EQ",
+      "value": "AutoStandardScaler"
+    },
+    {
+      "child": "AutoStandardScaler:with_std",
+      "parent": "scaling",
+      "type": "EQ",
+      "value": "AutoStandardScaler"
+    }
+  ],
+  "forbiddens": [],
+  "python_module_version": "0.6.1",
+  "json_format_version": 0.4
+}

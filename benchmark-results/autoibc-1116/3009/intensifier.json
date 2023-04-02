@@ -1,0 +1,111 @@
+{
+  "incumbent_ids": [
+    2
+  ],
+  "rejected_config_ids": [],
+  "incumbents_changed": 2,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.9999596204320614
+      ],
+      "trial": 1,
+      "walltime": 4.9058754444122314
+    },
+    {
+      "config_ids": [
+        2
+      ],
+      "costs": [
+        -1.0
+      ],
+      "trial": 2,
+      "walltime": 19.89986777305603
+    }
+  ],
+  "state": {
+    "tracker": {
+      "0,1": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "AutoStandardScaler",
+              "AutoKNNImputer:n_neighbors": 11,
+              "AutoRandomForest:bootstrap": "True",
+              "AutoRandomForest:class_weight": "balanced",
+              "AutoRandomForest:criterion": "gini",
+              "AutoRandomForest:max_features": 0.8869799644235103,
+              "AutoRandomForest:min_samples_leaf": 6,
+              "AutoRandomForest:min_samples_split": 14,
+              "AutoSMOTEENN:k_neighbors": 11,
+              "AutoSMOTEENN:n_neighbors": 23,
+              "AutoStandardScaler:with_mean": "False",
+              "AutoStandardScaler:with_std": "True"
+            },
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTE",
+              "scaling": "AutoStandardScaler",
+              "AutoRandomForest:bootstrap": "True",
+              "AutoRandomForest:class_weight": "balanced_subsample",
+              "AutoRandomForest:criterion": "gini",
+              "AutoRandomForest:max_features": 0.9967465883408322,
+              "AutoRandomForest:min_samples_leaf": 6,
+              "AutoRandomForest:min_samples_split": 19,
+              "AutoSMOTE:k_neighbors": 9,
+              "AutoSimpleImputer:strategy": "median",
+              "AutoStandardScaler:with_mean": "True",
+              "AutoStandardScaler:with_std": "False"
+            },
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "None",
+              "AutoKNNImputer:n_neighbors": 1,
+              "AutoRandomForest:bootstrap": "False",
+              "AutoRandomForest:class_weight": "balanced_subsample",
+              "AutoRandomForest:criterion": "gini",
+              "AutoRandomForest:max_features": 0.5821147723102621,
+              "AutoRandomForest:min_samples_leaf": 4,
+              "AutoRandomForest:min_samples_split": 12,
+              "AutoSMOTEENN:k_neighbors": 5,
+              "AutoSMOTEENN:n_neighbors": 17
+            },
+            {
+              "classification": "AutoSGD",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "AutoStandardScaler",
+              "AutoKNNImputer:n_neighbors": 12,
+              "AutoSGD:alpha": 0.0013684885836975956,
+              "AutoSGD:average": "False",
+              "AutoSGD:class_weight": "balanced",
+              "AutoSGD:epsilon": 0.015518839922273969,
+              "AutoSGD:eta0": 0.009883644253271104,
+              "AutoSGD:l1_ratio": 4.6460089792312355e-09,
+              "AutoSGD:learning_rate": "invscaling",
+              "AutoSGD:loss": "modified_huber",
+              "AutoSGD:penalty": "l1",
+              "AutoSGD:power_t": 0.07624085602277472,
+              "AutoSGD:tol": 0.002344619998604219,
+              "AutoSMOTEENN:k_neighbors": 8,
+              "AutoSMOTEENN:n_neighbors": 6,
+              "AutoStandardScaler:with_mean": "True",
+              "AutoStandardScaler:with_std": "True"
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 1
+  }
+}

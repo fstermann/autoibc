@@ -1,0 +1,93 @@
+{
+  "incumbent_ids": [
+    71
+  ],
+  "rejected_config_ids": [
+    1,
+    10,
+    38
+  ],
+  "incumbents_changed": 4,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.9806943891056417
+      ],
+      "trial": 1,
+      "walltime": 1.1078450679779053
+    },
+    {
+      "config_ids": [
+        10
+      ],
+      "costs": [
+        -0.9919054216939959
+      ],
+      "trial": 20,
+      "walltime": 51.47653913497925
+    },
+    {
+      "config_ids": [
+        38
+      ],
+      "costs": [
+        -0.9942705837155771
+      ],
+      "trial": 65,
+      "walltime": 237.21706342697144
+    },
+    {
+      "config_ids": [
+        71
+      ],
+      "costs": [
+        -0.9958471228781894
+      ],
+      "trial": 126,
+      "walltime": 716.6003012657166
+    }
+  ],
+  "state": {
+    "tracker": {
+      "2,0": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 0.00024101380051179587,
+              "AutoGradientBoosting:learning_rate": 0.15904140943901135,
+              "AutoGradientBoosting:max_leaf_nodes": 91,
+              "AutoGradientBoosting:min_samples_leaf": 8,
+              "AutoGradientBoosting:n_iter_no_change": 19,
+              "AutoGradientBoosting:validation_fraction": 0.06464569845666848,
+              "AutoSMOTETomek:k_neighbors": 21,
+              "AutoSimpleImputer:strategy": "most_frequent"
+            },
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 0.0002694313971776698,
+              "AutoGradientBoosting:learning_rate": 0.1984339193793137,
+              "AutoGradientBoosting:max_leaf_nodes": 30,
+              "AutoGradientBoosting:min_samples_leaf": 15,
+              "AutoGradientBoosting:n_iter_no_change": 18,
+              "AutoGradientBoosting:validation_fraction": 0.26463829520287124,
+              "AutoSMOTETomek:k_neighbors": 21,
+              "AutoSimpleImputer:strategy": "most_frequent"
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 3
+  }
+}

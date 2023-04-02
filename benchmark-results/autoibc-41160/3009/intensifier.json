@@ -1,0 +1,78 @@
+{
+  "incumbent_ids": [
+    13
+  ],
+  "rejected_config_ids": [
+    5
+  ],
+  "incumbents_changed": 4,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.5989275615709414
+      ],
+      "trial": 1,
+      "walltime": 10.308960199356079
+    },
+    {
+      "config_ids": [
+        3
+      ],
+      "costs": [
+        -0.6151617802474341
+      ],
+      "trial": 3,
+      "walltime": 44.771461963653564
+    },
+    {
+      "config_ids": [
+        5
+      ],
+      "costs": [
+        -0.6243136699329334
+      ],
+      "trial": 5,
+      "walltime": 94.29031229019165
+    },
+    {
+      "config_ids": [
+        13
+      ],
+      "costs": [
+        -0.7210813093980992
+      ],
+      "trial": 25,
+      "walltime": 1669.4265987873077
+    }
+  ],
+  "state": {
+    "tracker": {
+      "2,1": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "None",
+              "AutoRandomForest:bootstrap": "True",
+              "AutoRandomForest:class_weight": "balanced_subsample",
+              "AutoRandomForest:criterion": "entropy",
+              "AutoRandomForest:max_features": 0.8065456598750746,
+              "AutoRandomForest:min_samples_leaf": 7,
+              "AutoRandomForest:min_samples_split": 6,
+              "AutoSMOTEENN:k_neighbors": 23,
+              "AutoSMOTEENN:n_neighbors": 25,
+              "AutoSimpleImputer:strategy": "median"
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 3
+  }
+}

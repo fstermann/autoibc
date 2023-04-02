@@ -1,0 +1,147 @@
+{
+  "incumbent_ids": [
+    38
+  ],
+  "rejected_config_ids": [
+    7,
+    2,
+    23
+  ],
+  "incumbents_changed": 6,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.9664734607083512
+      ],
+      "trial": 1,
+      "walltime": 3.723414421081543
+    },
+    {
+      "config_ids": [
+        2
+      ],
+      "costs": [
+        -0.9690974454963529
+      ],
+      "trial": 2,
+      "walltime": 14.224090099334717
+    },
+    {
+      "config_ids": [
+        7
+      ],
+      "costs": [
+        -0.976030598017432
+      ],
+      "trial": 7,
+      "walltime": 44.832831382751465
+    },
+    {
+      "config_ids": [
+        2
+      ],
+      "costs": [
+        -0.9854228235840921
+      ],
+      "trial": 14,
+      "walltime": 167.91326451301575
+    },
+    {
+      "config_ids": [
+        23
+      ],
+      "costs": [
+        -0.9900889062616954
+      ],
+      "trial": 41,
+      "walltime": 810.5233910083771
+    },
+    {
+      "config_ids": [
+        38
+      ],
+      "costs": [
+        -0.9926055605918211
+      ],
+      "trial": 67,
+      "walltime": 1429.492105960846
+    }
+  ],
+  "state": {
+    "tracker": {
+      "1,0": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 9.8511577284781e-08,
+              "AutoGradientBoosting:learning_rate": 0.03999676261445817,
+              "AutoGradientBoosting:max_leaf_nodes": 3,
+              "AutoGradientBoosting:min_samples_leaf": 8,
+              "AutoGradientBoosting:n_iter_no_change": 12,
+              "AutoGradientBoosting:validation_fraction": 0.027712692815122307,
+              "AutoKNNImputer:n_neighbors": 1,
+              "AutoSMOTEENN:k_neighbors": 1,
+              "AutoSMOTEENN:n_neighbors": 10
+            },
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoRandomForest:bootstrap": "False",
+              "AutoRandomForest:class_weight": "None",
+              "AutoRandomForest:criterion": "entropy",
+              "AutoRandomForest:max_features": 0.8681907088437236,
+              "AutoRandomForest:min_samples_leaf": 5,
+              "AutoRandomForest:min_samples_split": 9,
+              "AutoSMOTETomek:k_neighbors": 3,
+              "AutoSimpleImputer:strategy": "median"
+            },
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 7.66123762071089e-05,
+              "AutoGradientBoosting:learning_rate": 0.27243871742939935,
+              "AutoGradientBoosting:max_leaf_nodes": 30,
+              "AutoGradientBoosting:min_samples_leaf": 8,
+              "AutoGradientBoosting:n_iter_no_change": 16,
+              "AutoGradientBoosting:validation_fraction": 0.23757638253943664,
+              "AutoSMOTETomek:k_neighbors": 21,
+              "AutoSimpleImputer:strategy": "most_frequent"
+            },
+            {
+              "classification": "AutoSGD",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoKNNImputer:n_neighbors": 23,
+              "AutoSGD:alpha": 0.0499830083630783,
+              "AutoSGD:average": "False",
+              "AutoSGD:class_weight": "balanced",
+              "AutoSGD:epsilon": 0.0008503743126777665,
+              "AutoSGD:eta0": 3.095332472056059e-05,
+              "AutoSGD:l1_ratio": 1.568461456273598e-09,
+              "AutoSGD:learning_rate": "invscaling",
+              "AutoSGD:loss": "perceptron",
+              "AutoSGD:penalty": "l2",
+              "AutoSGD:power_t": 0.8564591676169304,
+              "AutoSGD:tol": 0.006757061085911916,
+              "AutoSMOTETomek:k_neighbors": 7
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 2
+  }
+}

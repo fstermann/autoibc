@@ -1,0 +1,82 @@
+{
+  "incumbent_ids": [
+    38
+  ],
+  "rejected_config_ids": [
+    1,
+    20
+  ],
+  "incumbents_changed": 3,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.9573309686516076
+      ],
+      "trial": 1,
+      "walltime": 2.1849730014801025
+    },
+    {
+      "config_ids": [
+        20
+      ],
+      "costs": [
+        -0.985093516670363
+      ],
+      "trial": 41,
+      "walltime": 179.7721230983734
+    },
+    {
+      "config_ids": [
+        38
+      ],
+      "costs": [
+        -0.9924085163007319
+      ],
+      "trial": 67,
+      "walltime": 288.6705446243286
+    }
+  ],
+  "state": {
+    "tracker": {
+      "0,2": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTE",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 0.000770669171528344,
+              "AutoGradientBoosting:learning_rate": 0.18588598014782082,
+              "AutoGradientBoosting:max_leaf_nodes": 1622,
+              "AutoGradientBoosting:min_samples_leaf": 187,
+              "AutoGradientBoosting:n_iter_no_change": 14,
+              "AutoGradientBoosting:validation_fraction": 0.3088719701393846,
+              "AutoKNNImputer:n_neighbors": 20,
+              "AutoSMOTE:k_neighbors": 1
+            },
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 0.004832851068987912,
+              "AutoGradientBoosting:learning_rate": 0.09752780246742034,
+              "AutoGradientBoosting:max_leaf_nodes": 106,
+              "AutoGradientBoosting:min_samples_leaf": 18,
+              "AutoGradientBoosting:n_iter_no_change": 14,
+              "AutoGradientBoosting:validation_fraction": 0.056111469860210574,
+              "AutoSMOTETomek:k_neighbors": 22,
+              "AutoSimpleImputer:strategy": "mean"
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 1
+  }
+}

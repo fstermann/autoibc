@@ -1,0 +1,111 @@
+{
+  "incumbent_ids": [
+    108
+  ],
+  "rejected_config_ids": [
+    6,
+    11,
+    14,
+    26,
+    88
+  ],
+  "incumbents_changed": 7,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.9324094839707537
+      ],
+      "trial": 1,
+      "walltime": 1.351360559463501
+    },
+    {
+      "config_ids": [
+        6
+      ],
+      "costs": [
+        -0.9562714426321708
+      ],
+      "trial": 6,
+      "walltime": 14.106924772262573
+    },
+    {
+      "config_ids": [
+        11
+      ],
+      "costs": [
+        -0.9696184986963085
+      ],
+      "trial": 20,
+      "walltime": 34.505563735961914
+    },
+    {
+      "config_ids": [
+        14
+      ],
+      "costs": [
+        -0.9746465172833073
+      ],
+      "trial": 25,
+      "walltime": 121.65459275245667
+    },
+    {
+      "config_ids": [
+        26
+      ],
+      "costs": [
+        -0.9832204273058884
+      ],
+      "trial": 48,
+      "walltime": 162.98129200935364
+    },
+    {
+      "config_ids": [
+        88
+      ],
+      "costs": [
+        -0.9840125065138092
+      ],
+      "trial": 155,
+      "walltime": 739.9699020385742
+    },
+    {
+      "config_ids": [
+        108
+      ],
+      "costs": [
+        -0.9875212784436338
+      ],
+      "trial": 197,
+      "walltime": 941.7572906017303
+    }
+  ],
+  "state": {
+    "tracker": {
+      "1,2": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 2.1461398718706746e-09,
+              "AutoGradientBoosting:learning_rate": 0.14260246213233096,
+              "AutoGradientBoosting:max_leaf_nodes": 61,
+              "AutoGradientBoosting:min_samples_leaf": 89,
+              "AutoGradientBoosting:n_iter_no_change": 8,
+              "AutoGradientBoosting:validation_fraction": 0.08354087566026928,
+              "AutoKNNImputer:n_neighbors": 4,
+              "AutoSMOTETomek:k_neighbors": 13
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 2
+  }
+}

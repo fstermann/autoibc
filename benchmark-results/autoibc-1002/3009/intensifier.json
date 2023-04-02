@@ -1,0 +1,158 @@
+{
+  "incumbent_ids": [
+    23
+  ],
+  "rejected_config_ids": [
+    1,
+    3,
+    9,
+    15
+  ],
+  "incumbents_changed": 6,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.5982725192790838
+      ],
+      "trial": 1,
+      "walltime": 2.2059712409973145
+    },
+    {
+      "config_ids": [
+        2
+      ],
+      "costs": [
+        -0.6404873228724431
+      ],
+      "trial": 2,
+      "walltime": 6.495446443557739
+    },
+    {
+      "config_ids": [
+        3
+      ],
+      "costs": [
+        -0.6663362571458852
+      ],
+      "trial": 3,
+      "walltime": 10.334911108016968
+    },
+    {
+      "config_ids": [
+        9
+      ],
+      "costs": [
+        -0.691656772247664
+      ],
+      "trial": 16,
+      "walltime": 102.06050562858582
+    },
+    {
+      "config_ids": [
+        15
+      ],
+      "costs": [
+        -0.7831267712072549
+      ],
+      "trial": 26,
+      "walltime": 263.63711166381836
+    },
+    {
+      "config_ids": [
+        23
+      ],
+      "costs": [
+        -0.7938505976271002
+      ],
+      "trial": 35,
+      "walltime": 273.3635654449463
+    }
+  ],
+  "state": {
+    "tracker": {
+      "0,1": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoSGD",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTETomek",
+              "scaling": "None",
+              "AutoSGD:alpha": 3.760372320159243e-07,
+              "AutoSGD:average": "True",
+              "AutoSGD:class_weight": "balanced",
+              "AutoSGD:epsilon": 0.00029630198979102226,
+              "AutoSGD:eta0": 0.0006318306298513215,
+              "AutoSGD:l1_ratio": 0.025271771072500032,
+              "AutoSGD:learning_rate": "invscaling",
+              "AutoSGD:loss": "perceptron",
+              "AutoSGD:penalty": "elasticnet",
+              "AutoSGD:power_t": 0.0003727498372960789,
+              "AutoSGD:tol": 0.0005116971380463146,
+              "AutoSMOTETomek:k_neighbors": 23,
+              "AutoSimpleImputer:strategy": "median"
+            },
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTE",
+              "scaling": "AutoStandardScaler",
+              "AutoRandomForest:bootstrap": "False",
+              "AutoRandomForest:class_weight": "balanced",
+              "AutoRandomForest:criterion": "gini",
+              "AutoRandomForest:max_features": 0.9478025693079096,
+              "AutoRandomForest:min_samples_leaf": 16,
+              "AutoRandomForest:min_samples_split": 3,
+              "AutoSMOTE:k_neighbors": 1,
+              "AutoSimpleImputer:strategy": "most_frequent",
+              "AutoStandardScaler:with_mean": "False",
+              "AutoStandardScaler:with_std": "True"
+            },
+            {
+              "classification": "AutoSGD",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "None",
+              "AutoSGD:alpha": 4.249562796943081e-06,
+              "AutoSGD:average": "True",
+              "AutoSGD:class_weight": "balanced",
+              "AutoSGD:epsilon": 0.09623459773925212,
+              "AutoSGD:eta0": 0.02888907249333199,
+              "AutoSGD:l1_ratio": 1.0729675515335325e-07,
+              "AutoSGD:learning_rate": "invscaling",
+              "AutoSGD:loss": "modified_huber",
+              "AutoSGD:penalty": "l2",
+              "AutoSGD:power_t": 0.00015874963078539947,
+              "AutoSGD:tol": 0.00047743477769949334,
+              "AutoSMOTEENN:k_neighbors": 1,
+              "AutoSMOTEENN:n_neighbors": 21,
+              "AutoSimpleImputer:strategy": "most_frequent"
+            },
+            {
+              "classification": "AutoRandomForest",
+              "imputation": "AutoSimpleImputer",
+              "sampling": "AutoSMOTEENN",
+              "scaling": "AutoStandardScaler",
+              "AutoRandomForest:bootstrap": "True",
+              "AutoRandomForest:class_weight": "balanced_subsample",
+              "AutoRandomForest:criterion": "entropy",
+              "AutoRandomForest:max_features": 0.38352262564378203,
+              "AutoRandomForest:min_samples_leaf": 16,
+              "AutoRandomForest:min_samples_split": 11,
+              "AutoSMOTEENN:k_neighbors": 20,
+              "AutoSMOTEENN:n_neighbors": 24,
+              "AutoSimpleImputer:strategy": "most_frequent",
+              "AutoStandardScaler:with_mean": "True",
+              "AutoStandardScaler:with_std": "True"
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 1
+  }
+}

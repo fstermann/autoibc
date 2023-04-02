@@ -1,0 +1,111 @@
+{
+  "incumbent_ids": [
+    67
+  ],
+  "rejected_config_ids": [
+    1,
+    7,
+    2,
+    4,
+    39
+  ],
+  "incumbents_changed": 7,
+  "trajectory": [
+    {
+      "config_ids": [
+        1
+      ],
+      "costs": [
+        -0.6085589698122287
+      ],
+      "trial": 1,
+      "walltime": 7.3878092765808105
+    },
+    {
+      "config_ids": [
+        2
+      ],
+      "costs": [
+        -0.6375453195605815
+      ],
+      "trial": 2,
+      "walltime": 12.805936813354492
+    },
+    {
+      "config_ids": [
+        7
+      ],
+      "costs": [
+        -0.6422086886112219
+      ],
+      "trial": 7,
+      "walltime": 27.157687664031982
+    },
+    {
+      "config_ids": [
+        2
+      ],
+      "costs": [
+        -0.6387354324445829
+      ],
+      "trial": 10,
+      "walltime": 43.069677114486694
+    },
+    {
+      "config_ids": [
+        4
+      ],
+      "costs": [
+        -0.6501913811596676
+      ],
+      "trial": 14,
+      "walltime": 85.22378015518188
+    },
+    {
+      "config_ids": [
+        39
+      ],
+      "costs": [
+        -0.6697168273434886
+      ],
+      "trial": 74,
+      "walltime": 862.1406419277191
+    },
+    {
+      "config_ids": [
+        67
+      ],
+      "costs": [
+        -0.6733981798356886
+      ],
+      "trial": 119,
+      "walltime": 1519.8268473148346
+    }
+  ],
+  "state": {
+    "tracker": {
+      "1,2": [
+        [
+          0,
+          [
+            {
+              "classification": "AutoGradientBoosting",
+              "imputation": "AutoKNNImputer",
+              "sampling": "AutoSMOTE",
+              "scaling": "None",
+              "AutoGradientBoosting:l2_regularization": 9.882250136415957e-06,
+              "AutoGradientBoosting:learning_rate": 0.1407146975829332,
+              "AutoGradientBoosting:max_leaf_nodes": 1734,
+              "AutoGradientBoosting:min_samples_leaf": 7,
+              "AutoGradientBoosting:n_iter_no_change": 13,
+              "AutoGradientBoosting:validation_fraction": 0.33661959494077975,
+              "AutoKNNImputer:n_neighbors": 3,
+              "AutoSMOTE:k_neighbors": 11
+            }
+          ]
+        ]
+      ]
+    },
+    "next_bracket": 2
+  }
+}
