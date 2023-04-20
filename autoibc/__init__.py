@@ -53,10 +53,13 @@ class SimplePipeline(AutoPipeline):
         )
 
 
-class RFPipeline(AutoPipeline):
+class AutoRandomForstPipeline(AutoPipeline):
     def __init__(self) -> None:
         super().__init__(
             steps=dict(
+                imputation=[
+                    preprocessing.AutoSimpleImputer(),
+                ],
                 classification=[
                     classification.AutoRandomForest(),
                 ],
