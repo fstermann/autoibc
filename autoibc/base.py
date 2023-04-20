@@ -21,7 +21,6 @@ from smac import MultiFidelityFacade
 from smac import Scenario
 from smac.intensifier import Hyperband
 
-from autoibc.callbacks import EarlyStoppingCallback
 from autoibc.callbacks import TQDMCallback
 from autoibc.util import convert_seconds_to_str
 from autoibc.util import hide_fit_warnings
@@ -204,6 +203,7 @@ class BaseAutoIBC(BaseEstimator, ABC):
             output_directory=output_dir,
             deterministic=True,
             objectives=[self.metric],
+            termination_cost_threshold=-0.99999,
             walltime_limit=max_runtime,
             n_trials=n_trials,
             min_budget=min_train_size,
@@ -224,7 +224,6 @@ class BaseAutoIBC(BaseEstimator, ABC):
             overwrite=True,
             callbacks=[
                 TQDMCallback(metric=self.metric, n_trials=n_trials),
-                EarlyStoppingCallback(),
             ],
         )
         self.best_config = self.smac.optimize()
@@ -233,6 +232,7 @@ class BaseAutoIBC(BaseEstimator, ABC):
 
         print(self.best_config)
         if self.best_config:
+            # Refit the model on the whole outer train set
             params = self.get_config_dict(self.best_config)
             self.set_params(**params)
             self.estimator.fit(X, y)

@@ -52,19 +52,3 @@ class TQDMCallback(Callback):
         label = f"Best {self.metric}: {cost:.4f}"
         self.pbar.set_description_str(label)
         return None
-
-
-class EarlyStoppingCallback(Callback):
-    def __init__(self, threshold: float = -1.0) -> None:
-        self.threshold = threshold
-
-    def on_ask_start(self, smbo: SMBO):
-        incumbent = smbo.intensifier.get_incumbent()
-        if not incumbent:
-            return None
-        cost = smbo.runhistory.get_cost(incumbent)
-        if cost <= self.threshold:
-            raise StopIteration(
-                f"Early stopping criterion met ({cost} <= {self.threshold})",
-            )
-        return None
