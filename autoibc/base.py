@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import time
 from abc import ABC
 from abc import abstractproperty
@@ -8,13 +9,14 @@ from typing import Any
 from typing import Callable
 
 import numpy as np
+import pandas as pd
 from ConfigSpace import Configuration
 from ConfigSpace.configuration_space import ConfigurationSpace
+from scipy import stats
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import cross_val_score
 from sklearn.utils.multiclass import unique_labels
-from sklearn.utils.validation import check_X_y
 from smac import MultiFidelityFacade
 from smac import Scenario
 from smac.intensifier import Hyperband
@@ -147,8 +149,7 @@ class BaseAutoIBC(BaseEstimator, ABC):
         @hide_fit_warnings
         def train(cfg: Configuration, budget: float = 1.0, seed: int = 0) -> float:
             config_dict = self.get_config_dict(cfg)
-            params = self._prepare_params(**config_dict)
-            self.set_params(**params)
+            self.set_params(**config_dict)
             cv = StratifiedShuffleSplit(
                 n_splits=cv_splits,
                 train_size=budget,
@@ -191,10 +192,6 @@ class BaseAutoIBC(BaseEstimator, ABC):
         Returns:
             Configuration: The best configuration found.
         """
-        if not fit_params.pop("in_optimization", True):
-            return self.estimator.fit(X, y, **fit_params)
-
-        X, y = check_X_y(X, y)
         self.classes_ = unique_labels(y)
         self.X_ = X
         self.y_ = y
@@ -218,20 +215,72 @@ class BaseAutoIBC(BaseEstimator, ABC):
             seed=seed,
         )
 
-        smac = MultiFidelityFacade(
+        self.smac = MultiFidelityFacade(
             scenario=scenario,
             target_function=self.target_function(self.X_, self.y_, cv_splits=cv_splits),
             intensifier=intensifier,
             overwrite=True,
             callbacks=[TQDMCallback(metric=self.metric, n_trials=n_trials)],
         )
-        self.best_config = smac.optimize()
+        self.best_config = self.smac.optimize()
 
-        self.runtime = smac.intensifier.used_walltime
+        self.runtime = self.smac.intensifier.used_walltime
 
         print(self.best_config)
         if self.best_config:
-            params = self._prepare_params(**self.get_config_dict(self.best_config))
+            params = self.get_config_dict(self.best_config)
             self.set_params(**params)
             self.estimator.fit(X, y)
+
+        self.calculate_correlations()
+
         return self
+
+    def calculate_correlations(self):
+        if not self.smac:
+            return None
+
+        self.smac: MultiFidelityFacade
+        runhistory = self.smac.runhistory
+
+        budgets = sorted({trial_key.budget for trial_key in runhistory})
+        budget_combinations = list(itertools.combinations(budgets, 2))
+
+        corrs = {}
+        all_scores = {1: [], 2: []}
+
+        for budget1, budget2 in budget_combinations:
+            runs1 = {
+                trial_key.config_id: trial_value.cost
+                for trial_key, trial_value in runhistory.items()
+                if trial_key.budget == budget1
+            }
+            runs2 = {
+                trial_key.config_id: trial_value.cost
+                for trial_key, trial_value in runhistory.items()
+                if trial_key.budget == budget2
+            }
+
+            common_configs = set.intersection(set(runs1), set(runs2))
+            scores1 = [-runs1[config_id] for config_id in common_configs]
+            scores2 = [-runs2[config_id] for config_id in common_configs]
+            all_scores[1].extend(scores1)
+            all_scores[2].extend(scores2)
+
+            corr = stats.spearmanr(scores1, scores2).statistic
+            corrs[(budget1, budget2)] = (corr, len(common_configs))
+
+        all_corr = stats.spearmanr(all_scores[1], all_scores[2]).statistic
+
+        corrs[("All", "All")] = (all_corr, len(all_scores[1]))
+
+        budget1 = [c[0] for c in corrs]
+        budget2 = [c[1] for c in corrs]
+        corr = [f"{corrs[c][0]:+.4f}" for c in corrs]
+        n = [corrs[c][1] for c in corrs]
+        df = pd.DataFrame(
+            {"Budget 1": budget1, "Budget 2": budget2, "Corr": corr, "n": n},
+        )
+
+        print("Rank correlation of costs between budgets:")
+        print(df.to_markdown(index=False, tablefmt="pretty"))
