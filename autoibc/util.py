@@ -93,3 +93,22 @@ def make_configspace(*hps: Hyperparameter, name: str) -> ConfigurationSpace:
     """
     space = {hp.name: hp for hp in hps}
     return ConfigurationSpace(name=name, space=space)
+
+
+def convert_seconds_to_str(seconds: float) -> str:
+    """Converts seconds to a human-readable time string.
+
+    Args:
+        seconds (float): Seconds to convert.
+
+    Returns:
+        str: Human-readable time string.
+    """
+    if not isinstance(seconds, float):
+        return seconds
+    minutes, seconds = divmod(seconds, 60)  # Convert to minutes and seconds
+    milliseconds = int(seconds * 1000)  # Convert remaining seconds to milliseconds
+    seconds = int(seconds)
+    minutes = int(minutes)
+    formatted_time = f"{minutes:02d}:{seconds:02d}.{milliseconds:03d}"[:9]
+    return formatted_time

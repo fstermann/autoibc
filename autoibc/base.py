@@ -22,6 +22,7 @@ from smac import Scenario
 from smac.intensifier import Hyperband
 
 from autoibc.util import TQDMCallback
+from autoibc.util import convert_seconds_to_str
 from autoibc.util import hide_fit_warnings
 
 MAX_RUNTIME = 60 * 59  # Maximum of 1 hour per dataset (-1 minute for cleanup)
@@ -251,35 +252,51 @@ class BaseAutoIBC(BaseEstimator, ABC):
 
         for budget1, budget2 in budget_combinations:
             runs1 = {
-                trial_key.config_id: trial_value.cost
+                trial_key.config_id: trial_value
                 for trial_key, trial_value in runhistory.items()
                 if trial_key.budget == budget1
             }
             runs2 = {
-                trial_key.config_id: trial_value.cost
+                trial_key.config_id: trial_value
                 for trial_key, trial_value in runhistory.items()
                 if trial_key.budget == budget2
             }
 
             common_configs = set.intersection(set(runs1), set(runs2))
-            scores1 = [-runs1[config_id] for config_id in common_configs]
-            scores2 = [-runs2[config_id] for config_id in common_configs]
+            scores1 = [-runs1[config_id].cost for config_id in common_configs]
+            scores2 = [-runs2[config_id].cost for config_id in common_configs]
+            runtimes1 = [runs1[config_id].time for config_id in common_configs]
+            runtimes2 = [runs2[config_id].time for config_id in common_configs]
+            runtime_diff = [r2 - r1 for r1, r2 in zip(runtimes1, runtimes2)]
             all_scores[1].extend(scores1)
             all_scores[2].extend(scores2)
 
             corr = stats.spearmanr(scores1, scores2).statistic
-            corrs[(budget1, budget2)] = (corr, len(common_configs))
+            corrs[(budget1, budget2)] = (
+                corr,
+                len(common_configs),
+                np.mean(runtime_diff),
+            )
 
         all_corr = stats.spearmanr(all_scores[1], all_scores[2]).statistic
 
-        corrs[("All", "All")] = (all_corr, len(all_scores[1]))
+        corrs[("All", "All")] = (all_corr, len(all_scores[1]), "")
 
         budget1 = [c[0] for c in corrs]
         budget2 = [c[1] for c in corrs]
         corr = [f"{corrs[c][0]:+.4f}" for c in corrs]
         n = [corrs[c][1] for c in corrs]
+        avg_runtime_diff = [
+            convert_seconds_to_str(corrs[c][2]) if corrs[c][2] else "" for c in corrs
+        ]
         df = pd.DataFrame(
-            {"Budget 1": budget1, "Budget 2": budget2, "Corr": corr, "n": n},
+            {
+                "Budget 1": budget1,
+                "Budget 2": budget2,
+                "Corr": corr,
+                "n": n,
+                "Avg. runtime diff": avg_runtime_diff,
+            },
         )
 
         print("Rank correlation of costs between budgets:")
