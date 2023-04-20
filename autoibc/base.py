@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from abc import ABC
 from abc import abstractproperty
 from pathlib import Path
@@ -9,9 +10,11 @@ from typing import Callable
 import numpy as np
 from ConfigSpace import Configuration
 from ConfigSpace.configuration_space import ConfigurationSpace
-from sklearn.model_selection import StratifiedKFold
+from sklearn.base import BaseEstimator
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import cross_val_score
+from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import check_X_y
 from smac import MultiFidelityFacade
 from smac import Scenario
 from smac.intensifier import Hyperband
@@ -22,7 +25,7 @@ from autoibc.util import hide_fit_warnings
 MAX_RUNTIME = 60 * 59  # Maximum of 1 hour per dataset (-1 minute for cleanup)
 
 
-class BaseAutoIBC(ABC):
+class BaseAutoIBC(BaseEstimator, ABC):
     """Base class for all AutoIBC models.
 
     All AutoIBC models should inherit from this class and implement the
@@ -32,11 +35,13 @@ class BaseAutoIBC(ABC):
         model (Any): The sklearn base model to optimize.
     """
 
+    estimator: BaseEstimator
     metric: str = "balanced_accuracy"
     best_config: Configuration | None = None
 
-    def __init__(self, model: Any):
-        self.model = model
+    def __init__(self, estimator: BaseEstimator) -> None:
+        super().__init__()
+        self.estimator = estimator
 
     @abstractproperty
     def configspace(self) -> ConfigurationSpace:
@@ -46,18 +51,57 @@ class BaseAutoIBC(ABC):
     def name(self) -> str:
         return self.__class__.__name__
 
-    def get_model(self, config: dict[str, Any]) -> Any:
-        """Returns the sklearn model instantiated with the given configuration.
+    def set_params(self, **params: Any) -> BaseAutoIBC:
+        """Sets the parameters of the model.
+
+        Args:
+            **params (Any): Parameters to set.
+
+        Returns:
+            BaseAutoIBC: The model with the updated parameters.
+        """
+        params = self._prepare_params(**params)
+        return super().set_params(**params)
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        """Returns the parameters of the best model."""
+        if not deep:
+            return {}
+        params = self.estimator.get_params(deep=deep)
+        params["estimator"] = self.estimator
+        return self._prepare_params(**params)
+
+    def _unprepare_params(self, **params: Any) -> dict[str, Any]:
+        """Unprepares the parameters of the model.
 
         This can be overwritten by subclasses to implement custom logic.
 
         Args:
-            config (dict[str, Any]): Configuration of the model
+            **params (Any): Parameters to unprepare
 
         Returns:
-            Any: The sklearn model
+            dict[str, Any]: The unprepared parameters
         """
-        return self.model(**config)
+        return {
+            (k if not k.startswith("estimator__") else k.replace("estimator__", "")): v
+            for k, v in params.items()
+        }
+
+    def _prepare_params(self, **params: Any) -> dict[str, Any]:
+        """Prepares the parameters for the model.
+
+        This can be overwritten by subclasses to implement custom logic.
+
+        Args:
+            **params (Any): Parameters to prepare
+
+        Returns:
+            dict[str, Any]: The prepared parameters
+        """
+        return {
+            (k if k.startswith("estimator") else f"estimator__{k}"): v
+            for k, v in params.items()
+        }
 
     @staticmethod
     def get_config_dict(config: Configuration) -> dict[str, Any]:
@@ -83,14 +127,6 @@ class BaseAutoIBC(ABC):
                 config_dict[key] = None
         return config_dict
 
-    @property
-    def best_model(self) -> Any:
-        """Returns the best model found by the hyperparameter optimization."""
-        if not self.best_config:
-            raise ValueError("Model was not fitted yet.")
-        config_dict = self.get_config_dict(self.best_config)
-        return self.get_model(config_dict)
-
     def target_function(
         self,
         X: np.ndarray,
@@ -111,13 +147,14 @@ class BaseAutoIBC(ABC):
         @hide_fit_warnings
         def train(cfg: Configuration, budget: float = 1.0, seed: int = 0) -> float:
             config_dict = self.get_config_dict(cfg)
-            model = self.get_model(config_dict)
+            params = self._prepare_params(**config_dict)
+            self.set_params(**params)
             cv = StratifiedShuffleSplit(
                 n_splits=cv_splits,
                 train_size=budget,
                 random_state=seed,
             )
-            scores = cross_val_score(model, X, y, scoring=self.metric, cv=cv)
+            scores = cross_val_score(self.estimator, X, y, scoring=self.metric, cv=cv)
             return -np.mean(scores)
 
         return train
@@ -133,7 +170,8 @@ class BaseAutoIBC(ABC):
         max_runtime: int = MAX_RUNTIME,
         output_dir: Path = Path("results"),
         seed: int = 42,
-    ) -> Configuration:
+        **fit_params,
+    ) -> BaseAutoIBC:
         """Optimizes the hyperparameters of the model with SMAC.
 
         Args:
@@ -153,9 +191,17 @@ class BaseAutoIBC(ABC):
         Returns:
             Configuration: The best configuration found.
         """
+        if not fit_params.pop("in_optimization", True):
+            return self.estimator.fit(X, y, **fit_params)
+
+        X, y = check_X_y(X, y)
+        self.classes_ = unique_labels(y)
+        self.X_ = X
+        self.y_ = y
+
         scenario = Scenario(
             configspace=self.configspace,
-            name=run_name,
+            name=f"{run_name}/{time.time()}",
             output_directory=output_dir,
             deterministic=True,
             objectives=[self.metric],
@@ -171,24 +217,21 @@ class BaseAutoIBC(ABC):
             incumbent_selection="highest_observed_budget",
             seed=seed,
         )
+
         smac = MultiFidelityFacade(
             scenario=scenario,
-            target_function=self.target_function(X, y, cv_splits=cv_splits),
+            target_function=self.target_function(self.X_, self.y_, cv_splits=cv_splits),
             intensifier=intensifier,
             overwrite=True,
             callbacks=[TQDMCallback(metric=self.metric, n_trials=n_trials)],
         )
         self.best_config = smac.optimize()
+
         self.runtime = smac.intensifier.used_walltime
-        return self.best_config
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
-        """Predicts the labels for the given features."""
-        return self.best_model.predict(X)
-
-    def evaluate(self, X: np.ndarray, y: np.ndarray, cv_splits: int = 10) -> float:
-        """Evaluates the model on the given data."""
-        cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=42)
-        return np.mean(
-            cross_val_score(self.best_model, X, y, scoring=self.metric, cv=cv),
-        )
+        print(self.best_config)
+        if self.best_config:
+            params = self._prepare_params(**self.get_config_dict(self.best_config))
+            self.set_params(**params)
+            self.estimator.fit(X, y)
+        return self

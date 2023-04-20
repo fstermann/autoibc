@@ -7,7 +7,6 @@ from imblearn.pipeline import Pipeline
 
 from autoibc.base import BaseAutoIBC
 from autoibc.hp import Categorical
-from autoibc.logging import logger
 
 
 class AutoStep:
@@ -39,6 +38,23 @@ class AutoStep:
         return Categorical(self.name, list(self.models), weights=self.weights)
 
 
+class IBCPipeline(Pipeline):
+    def _check_fit_params(self, **fit_params):
+        """Overwrites the _check_fit_params method of the Pipeline class.
+
+        We set the in_optimization parameter here to False,
+        so we dont end up in an opimization loop.
+
+        The BaseAutoIBC.fit method will check the in_optimization parameter
+        and just return the estimator.fit method if it is False.
+        """
+        in_optimization = fit_params.pop("in_optimization", False)
+        params = super()._check_fit_params(**fit_params)
+        params["in_optimization"] = in_optimization
+        params[self.steps[-1][0]]["in_optimization"] = in_optimization
+        return params
+
+
 class AutoPipeline(BaseAutoIBC):
     """A pipeline of AutoIBC models.
 
@@ -53,11 +69,17 @@ class AutoPipeline(BaseAutoIBC):
 
     def __init__(
         self,
-        **steps: list[BaseAutoIBC | None] | dict[BaseAutoIBC | None, float],
+        steps: dict[str, list[BaseAutoIBC | None] | dict[BaseAutoIBC | None, float]],
     ) -> None:
-        super().__init__(model=Pipeline)
+        self.auto_steps = self._validate_hp_steps(steps)
+        default_steps = [
+            (step.name, list(step.models.values())[0])
+            for step in self.auto_steps.values()
+        ]
+        super().__init__(estimator=IBCPipeline(steps=default_steps))
 
-        self._steps = {}
+    def _validate_hp_steps(self, steps) -> dict[str, AutoStep]:
+        auto_steps = {}
         for step, models in steps.items():
             if not isinstance(models, (list, dict)):
                 raise ValueError("Step must be a list or a dict")
@@ -65,12 +87,8 @@ class AutoPipeline(BaseAutoIBC):
             if isinstance(models, dict):
                 weights = list(models.values())
                 models = list(models.keys())
-            self._steps[step] = AutoStep(name=step, models=models, weights=weights)
-
-    @property
-    def steps(self) -> dict[str, AutoStep]:
-        """Returns the steps of the pipeline."""
-        return self._steps
+            auto_steps[step] = AutoStep(name=step, models=models, weights=weights)
+        return auto_steps
 
     @property
     def step_names(self) -> list[str]:
@@ -87,14 +105,16 @@ class AutoPipeline(BaseAutoIBC):
         Returns:
             ConfigurationSpace: Configuration space for the pipeline
         """
+        steps = self.auto_steps
         cs = ConfigurationSpace(name=self.name)
-        for step in self.steps.values():
+        for step in steps.values():
             cs.add_hyperparameter(step.as_hp())
             for model in step.models.values():
                 if not model:
                     continue
                 cs.add_configuration_space(
-                    prefix=model.name,
+                    prefix=model.name + ":" + step.name,
+                    delimiter="__",
                     configuration_space=model.configspace,
                     parent_hyperparameter={
                         "parent": cs[step.name],
@@ -103,46 +123,35 @@ class AutoPipeline(BaseAutoIBC):
                 )
         return cs
 
-    def get_model(self, config: dict[str, Any]) -> Any:
-        """Instantiates the pipeline with the given configuration.
+    def set_params(self, **params):
+        print(
+            " -> ".join(
+                [params[step.name] or "None" for step in self.auto_steps.values()],
+            ),
+        )
+        for step in self.auto_steps.values():
+            step_class = params[step.name]
+            value = step.models[step_class] if step_class else "pass_through"
+            params[step.name] = value
+        return super().set_params(**params)
 
-        For each step in the pipeline, the model name is extracted from the
-        configuration and the corresponding model is instantiated.
+    def _prepare_params(self, **params: Any) -> dict[str, Any]:
+        """Prepares the parameters for the model.
 
-        Args:
-            config (dict[str, Any]): The configuration dictionary
-
-        Returns:
-            Any: The instantiated pipeline
-        """
-        all_steps = []
-        for step in self.steps.values():
-            model_name = config.pop(step.name)
-            if model_name is None:
-                continue
-            model_class = step.models[model_name]
-            model_params = self._filter_config(config, model_name)
-            assert model_class is not None
-            model = model_class.get_model(model_params)
-            all_steps.append((step.name, model))
-
-        if config:
-            logger.warning(f"Unused hyperparameters: {config}")
-        return self.model(all_steps)
-
-    @staticmethod
-    def _filter_config(config: dict[str, Any], name: str) -> dict[str, Any]:
-        """Filters the config for a specific model name.
+        This can be overwritten by subclasses to implement custom logic.
 
         Args:
-            config (dict[str, Any]): The config dictionary
-            name (str): The model name
+            **params (Any): Parameters to prepare
 
         Returns:
-            dict[str, Any]: The configuration dictionary for the model
+            dict[str, Any]: The prepared parameters
         """
-        filtered_config = {}
-        for key in list(config):
-            if key.startswith(name):
-                filtered_config[key.replace(f"{name}:", "")] = config.pop(key)
-        return filtered_config
+        params = {k.split(":")[-1]: v for k, v in params.items()}
+        params = {
+            (k.replace("__", "__estimator__") if "estimator" not in k else k): v
+            for k, v in params.items()
+        }
+        return params
+
+    def predict(self, X):
+        return self.estimator.predict(X)
