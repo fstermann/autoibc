@@ -21,7 +21,8 @@ from smac import MultiFidelityFacade
 from smac import Scenario
 from smac.intensifier import Hyperband
 
-from autoibc.util import TQDMCallback
+from autoibc.callbacks import EarlyStoppingCallback
+from autoibc.callbacks import TQDMCallback
 from autoibc.util import convert_seconds_to_str
 from autoibc.util import hide_fit_warnings
 
@@ -221,7 +222,10 @@ class BaseAutoIBC(BaseEstimator, ABC):
             target_function=self.target_function(self.X_, self.y_, cv_splits=cv_splits),
             intensifier=intensifier,
             overwrite=True,
-            callbacks=[TQDMCallback(metric=self.metric, n_trials=n_trials)],
+            callbacks=[
+                TQDMCallback(metric=self.metric, n_trials=n_trials),
+                EarlyStoppingCallback(),
+            ],
         )
         self.best_config = self.smac.optimize()
 
