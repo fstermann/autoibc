@@ -15,11 +15,8 @@ from autoibc.util import make_configspace
 
 
 class BaseAutoSampler(BaseAutoIBC, SamplerMixin):
-    def fit_resample(self, X, y):
-        return self.estimator.fit_resample(X, y)
-
-    def _fit_resample(self, X, y):
-        return self.estimator._fit_resample(X, y)
+    def _fit_resample(self, X, y, **fit_params):
+        return self.estimator._fit_resample(X, y, **fit_params)
 
 
 class AutoSMOTE(BaseAutoSampler):

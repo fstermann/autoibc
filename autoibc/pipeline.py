@@ -38,23 +38,6 @@ class AutoStep:
         return Categorical(self.name, list(self.models), weights=self.weights)
 
 
-class IBCPipeline(Pipeline):
-    def _check_fit_params(self, **fit_params):
-        """Overwrites the _check_fit_params method of the Pipeline class.
-
-        We set the in_optimization parameter here to False,
-        so we dont end up in an opimization loop.
-
-        The BaseAutoIBC.fit method will check the in_optimization parameter
-        and just return the estimator.fit method if it is False.
-        """
-        in_optimization = fit_params.pop("in_optimization", False)
-        params = super()._check_fit_params(**fit_params)
-        params["in_optimization"] = in_optimization
-        params[self.steps[-1][0]]["in_optimization"] = in_optimization
-        return params
-
-
 class AutoPipeline(BaseAutoIBC):
     """A pipeline of AutoIBC models.
 
@@ -76,7 +59,7 @@ class AutoPipeline(BaseAutoIBC):
             (step.name, list(step.models.values())[0])
             for step in self.auto_steps.values()
         ]
-        super().__init__(estimator=IBCPipeline(steps=default_steps))
+        super().__init__(estimator=Pipeline(steps=default_steps))
 
     def _validate_hp_steps(self, steps) -> dict[str, AutoStep]:
         auto_steps = {}
@@ -124,16 +107,29 @@ class AutoPipeline(BaseAutoIBC):
         return cs
 
     def set_params(self, **params):
-        print(
-            " -> ".join(
-                [params[step.name] or "None" for step in self.auto_steps.values()],
-            ),
-        )
+        """Manual hacky way to set the parameters of the pipeline."""
+        # print(
+        #     " -> ".join(
+        #         [params[step.name] or "None" for step in self.auto_steps.values()],
+        #     ),
+        # )
+        new_steps = []
         for step in self.auto_steps.values():
             step_class = params[step.name]
-            value = step.models[step_class] if step_class else "pass_through"
+            value = step.models[step_class] if step_class else "passthrough"
             params[step.name] = value
-        return super().set_params(**params)
+            new_steps.append((step.name, value))
+
+        new_pipeline = Pipeline(steps=new_steps)
+        params = self._prepare_params(**params)
+        new_pipeline.set_params(**params)
+
+        steps_with_new_params = [
+            (name, (step.estimator if not isinstance(step, str) else step))
+            for (name, step) in new_pipeline.steps
+        ]
+        self.estimator = Pipeline(steps=steps_with_new_params)
+        return self
 
     def _prepare_params(self, **params: Any) -> dict[str, Any]:
         """Prepares the parameters for the model.
