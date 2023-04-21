@@ -171,7 +171,7 @@ class BaseAutoIBC(BaseEstimator, ABC):
         min_train_size: float = 0.1,
         run_name: str = "autoibc-run",
         max_runtime: int = MAX_RUNTIME,
-        output_dir: Path = Path("results"),
+        output_dir: Path = Path("autoibc-results"),
         seed: int = 42,
         **fit_params,
     ) -> BaseAutoIBC:

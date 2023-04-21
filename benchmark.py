@@ -69,7 +69,9 @@ for idx in args.data_ids:
         random_state=args.seed,
     )
 
-    run_name = f"autoibc-{idx}-folds{args.outer_cv}-trials{args.n_trials}"
+    run_name = (
+        f"autoibc-{idx}-outer{args.outer_cv}-inner{args.inner_cv}-trials{args.n_trials}"
+    )
     auto_ibc_scores = cross_val_score(
         auto_ibc,
         X,
@@ -104,5 +106,5 @@ for idx in args.data_ids:
         "baseline_scores": baseline_scores.tolist(),
     }
     print(results)
-    with open(f"results/{run_name}/results.json", "w") as f:
+    with open(f"autoibc-results/{run_name}/results.json", "w") as f:
         json.dump(results, f)

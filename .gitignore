@@ -134,3 +134,4 @@ dmypy.json
 results
 !results/results.json
 !results/baselines.json
+autoibc-results
