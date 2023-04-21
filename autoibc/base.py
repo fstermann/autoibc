@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import hashlib
 import itertools
-import time
 from abc import ABC
 from abc import abstractproperty
 from pathlib import Path
@@ -167,6 +167,7 @@ class BaseAutoIBC(BaseEstimator, ABC):
         y: np.ndarray,
         n_trials: int = 100,
         cv_splits: int = 5,
+        outer_cv: bool = False,
         min_train_size: float = 0.1,
         run_name: str = "autoibc-run",
         max_runtime: int = MAX_RUNTIME,
@@ -180,7 +181,8 @@ class BaseAutoIBC(BaseEstimator, ABC):
             X (np.ndarray): Features.
             y (np.ndarray): Labels.
             n_trials (int, optional): Number of trials to run. Defaults to 100.
-            cv_splits (int, optional): Number of cross-validation splits. Defaults to 5.
+            cv_splits (int, optional): Number of inner cross-validation splits.
+                Defaults to 5.
             min_train_size (float, optional): Minimum training size, used as the budget.
                 Defaults to 0.1.
             run_name (str, optional): Name of the run. Defaults to "autoibc-run".
@@ -199,7 +201,7 @@ class BaseAutoIBC(BaseEstimator, ABC):
 
         scenario = Scenario(
             configspace=self.configspace,
-            name=f"{run_name}/{time.time()}",
+            name=run_name,
             output_directory=output_dir,
             deterministic=True,
             objectives=[self.metric],
@@ -210,6 +212,10 @@ class BaseAutoIBC(BaseEstimator, ABC):
             max_budget=0.9,  # Keep at least 0.1 for testing
             seed=seed,
         )
+        if outer_cv:
+            # Set up a outer-fold specific directory for the run
+            self.setup_dir(scenario, y=y)
+
         intensifier = Hyperband(
             scenario=scenario,
             eta=2,
@@ -240,6 +246,27 @@ class BaseAutoIBC(BaseEstimator, ABC):
         self.calculate_correlations()
 
         return self
+
+    @staticmethod
+    def setup_dir(scenario: Scenario, y: np.ndarray):
+        """Helper function to set the output directory of the SMAC scenario.
+
+        This ensures that the output directory is unique for each outer cross
+        validation fold, so that results are stored for each fold.
+
+        Args:
+            scenario (Scenario): The SMAC scenario.
+            y (np.ndarray): The labels.
+
+        Returns:
+            None
+        """
+        hashed_y = hashlib.sha1(y).hexdigest()
+        object.__setattr__(
+            scenario,
+            "output_directory",
+            scenario.output_directory / str(hashed_y),
+        )
 
     def calculate_correlations(self):
         if not self.smac:
