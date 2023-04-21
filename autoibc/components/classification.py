@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from ConfigSpace import ConfigurationSpace
+from sklearn.base import ClassifierMixin
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
@@ -15,11 +16,16 @@ from autoibc.util import make_configspace
 # Parameters adaped from Auto-sklearn 2.0
 
 
-class AutoRandomForest(BaseAutoIBC):
+class BaseAutoClassificer(BaseAutoIBC, ClassifierMixin):
+    def predict(self, X):
+        return self.estimator.predict(X)
+
+
+class AutoRandomForest(BaseAutoClassificer):
     """AutoIBC model for RandomForestClassifier."""
 
     def __init__(self) -> None:
-        super().__init__(model=RandomForestClassifier)
+        super().__init__(estimator=RandomForestClassifier())
 
     @property
     def configspace(self) -> ConfigurationSpace:
@@ -38,11 +44,11 @@ class AutoRandomForest(BaseAutoIBC):
         )
 
 
-class AutoGradientBoosting(BaseAutoIBC):
+class AutoGradientBoosting(BaseAutoClassificer):
     """AutoIBC model for HistGradientBoostingClassifier."""
 
     def __init__(self) -> None:
-        super().__init__(model=HistGradientBoostingClassifier)
+        super().__init__(estimator=HistGradientBoostingClassifier())
 
     @property
     def configspace(self) -> ConfigurationSpace:
@@ -57,11 +63,11 @@ class AutoGradientBoosting(BaseAutoIBC):
         )
 
 
-class AutoSGD(BaseAutoIBC):
+class AutoSGD(BaseAutoClassificer):
     """AutoIBC model for SGDClassifier."""
 
     def __init__(self) -> None:
-        super().__init__(model=SGDClassifier)
+        super().__init__(estimator=SGDClassifier())
 
     @property
     def configspace(self) -> ConfigurationSpace:

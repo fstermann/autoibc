@@ -30,13 +30,17 @@ pip install -e .[viz]
 ```
 
 
-## Windows
+## Swig
 
 You might need to install the latest version of [swig](https://www.swig.org/) in order to install `pyrfr`.
 
 # Usage
 
+The basic AutoIBC class can be used like any `sklearn` estimator.
+As such, you can pass it into the `cross_val_score` function to cross validate the system.
+
 ```python
+from sklearn.model_selection import StratifiedKFold, cross_val_score
 from autoibc import AutoIBC
 from autoibc.data import Dataset
 
@@ -44,21 +48,37 @@ from autoibc.data import Dataset
 auto_ibc = AutoIBC()
 
 # Load the dataset
-dataset = Dataset.from_openml(idx)
-X, y = dataset.to_numpy()
+X, y = Dataset.from_openml(idx).to_numpy()
 
-# Run the optimization
-auto_ibc.fit(X, y)
-
-# Evaluate the best incubment
-auto_ibc.evaluate(X, y)
+# Cross validate
+cv = StratifiedKFold(n_splits=3)
+cross_val_score(auto_ibc, X, y, scoring="balanced_accuracy", cv=cv)
 ```
+
+To control variables such as inner cross validation splits, or the number of trials, you can pass these parameter to `cross_val_score` with the `fit_params` argument.
+
+```python
+cross_val_score(
+    auto_ibc,
+    ...,
+    fit_params=dict(
+        n_trials=100,
+        cv_splits=5, # Number of inner cross validation splits
+        outer_cv=True, # Tells the system to save the runs for each outer fold
+        run_name="my-custom-run",
+        seed=42,
+    )
+)
+```
+
 
 ## Manual Configuration
 
 You can also configure a pipeline on your own.
 Simply pass in the name of the step along with a list of components to the `AutoPipeline` constructor.
 Alternatively, pass in components as a dictionary, where the key is the component and the value is the weight assigned to it. The weight will be used by the optimization process.
+
+It is also possible to instruct to try out configurations which skip the step. Simply pass in `None` as one of the components.
 
 ```python
 from autoibc.components import classification, preprocessing, sampling
@@ -67,17 +87,20 @@ from autoibc.pipeline import AutoPipeline
 
 # Set up the pipeline with 3 steps
 pipeline = AutoPipeline(
-    preprocessing=[
-        preprocessing.AutoSimpleImputer(),
-    ],
-    sampling=[
-        sampling.AutoSMOTE(),
-        sampling.AutoSMOTETomek(),
-    ],
-    classification={
-        classification.AutoRandomForest(): 3,
-        classification.AutoGradientBoosting(): 1,
-    },
+    steps=dict(
+        preprocessing=[
+            preprocessing.AutoSimpleImputer(),
+        ],
+        sampling=[
+            None, # Will consider configurations where no sampling is done
+            sampling.AutoSMOTE(),
+            sampling.AutoSMOTETomek(),
+        ],
+        classification={
+            classification.AutoRandomForest(): 3, # Prefer Random Forst
+            classification.AutoGradientBoosting(): 1,
+        },
+    )
 )
 ```
 

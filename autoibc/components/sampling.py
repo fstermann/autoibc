@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from ConfigSpace import ConfigurationSpace
+from imblearn.base import SamplerMixin
 from imblearn.combine import SMOTEENN
 from imblearn.combine import SMOTETomek
 from imblearn.over_sampling import SMOTE
@@ -13,11 +14,16 @@ from autoibc.hp import Integer
 from autoibc.util import make_configspace
 
 
-class AutoSMOTE(BaseAutoIBC):
+class BaseAutoSampler(BaseAutoIBC, SamplerMixin):
+    def _fit_resample(self, X, y, **fit_params):
+        return self.estimator._fit_resample(X, y, **fit_params)
+
+
+class AutoSMOTE(BaseAutoSampler):
     """AutoIBC model for SMOTE."""
 
     def __init__(self) -> None:
-        super().__init__(model=SMOTE)
+        super().__init__(estimator=SMOTE())
 
     @property
     def configspace(self) -> ConfigurationSpace:
@@ -27,11 +33,11 @@ class AutoSMOTE(BaseAutoIBC):
         )
 
 
-class AutoSMOTEENN(BaseAutoIBC):
+class AutoSMOTEENN(BaseAutoSampler):
     """AutoIBC model for SMOTEENN."""
 
     def __init__(self) -> None:
-        super().__init__(model=SMOTEENN)
+        super().__init__(estimator=SMOTEENN())
 
     @property
     def configspace(self) -> ConfigurationSpace:
@@ -41,21 +47,22 @@ class AutoSMOTEENN(BaseAutoIBC):
             name=self.name,
         )
 
-    def get_model(self, config: dict[str, Any]) -> SMOTEENN:
-        k_neighbors = config.pop("k_neighbors")
-        n_neighbors = config.pop("n_neighbors")
-        return self.model(
+    def set_params(self, **params: Any) -> AutoSMOTEENN:
+        params = self._unprepare_params(**params)
+        k_neighbors = params.pop("k_neighbors")
+        n_neighbors = params.pop("n_neighbors")
+        return super().set_params(
             smote=SMOTE(k_neighbors=k_neighbors),
             enn=EditedNearestNeighbours(n_neighbors=n_neighbors),
-            **config,
+            **params,
         )
 
 
-class AutoSMOTETomek(BaseAutoIBC):
+class AutoSMOTETomek(BaseAutoSampler):
     """AutoIBC model for SMOTETomek."""
 
     def __init__(self) -> None:
-        super().__init__(model=SMOTETomek)
+        super().__init__(estimator=SMOTETomek())
 
     @property
     def configspace(self) -> ConfigurationSpace:
@@ -64,9 +71,10 @@ class AutoSMOTETomek(BaseAutoIBC):
             name=self.name,
         )
 
-    def get_model(self, config: dict[str, Any]) -> SMOTETomek:
-        k_neighbors = config.pop("k_neighbors")
-        return self.model(
+    def set_params(self, **params: Any) -> AutoSMOTETomek:
+        params = self._unprepare_params(**params)
+        k_neighbors = params.pop("k_neighbors")
+        return super().set_params(
             smote=SMOTE(k_neighbors=k_neighbors),
-            **config,
+            **params,
         )
