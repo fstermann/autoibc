@@ -31,22 +31,23 @@ parser.add_argument(
 parser.add_argument(
     "--seed",
     type=int,
-    default=3009,
+    default=42,
     help="Random seed to use for reproducibility",
 )
 parser.add_argument(
     "--n_trials",
     type=int,
-    default=2500,
+    default=100,
     help="Number of trials to run for each dataset",
 )
+parser.add_argument("--outer_cv", type=int, default=2, help="Number of outer CV folds")
+parser.add_argument("--inner_cv", type=int, default=5, help="Number of inner CV folds")
 
 args = parser.parse_args()
 
 
 # Setup Pipelines for AutoIBC and Baseline
 auto_ibc = AutoIBC()
-
 baseline = pipeline.Pipeline(
     steps=[
         ("imputer", impute.SimpleImputer()),
@@ -61,24 +62,28 @@ for idx in args.data_ids:
     X, y = dataset.to_numpy()
     print(f"\nRunning on {dataset.name} [{idx}]")
 
-    # Run autoibc pipeline
-    auto_ibc.fit(
-        X,
-        y,
-        n_trials=args.n_trials,
-        run_name=f"autoibc-{idx}",
-        seed=args.seed,
+    # Evaluation against random forest baseline
+    cv_splits = StratifiedKFold(
+        n_splits=args.outer_cv,
+        shuffle=True,
+        random_state=args.seed,
     )
 
-    # Evaluation against random forest baseline
-    cv_splits = StratifiedKFold(n_splits=10, shuffle=True, random_state=args.seed)
-
+    run_name = f"autoibc-{idx}-folds{args.outer_cv}-trials{args.n_trials}"
     auto_ibc_scores = cross_val_score(
-        auto_ibc.best_model,
+        auto_ibc,
         X,
         y,
         scoring=args.scoring,
         cv=cv_splits,
+        fit_params=dict(
+            n_trials=args.n_trials,
+            cv_splits=args.inner_cv,
+            outer_cv=True,
+            run_name=run_name,
+            seed=args.seed,
+        ),
+        n_jobs=-1,  # Parallelize folds
     )
     print("AutoIBC scores: ", np.mean(auto_ibc_scores))
 
@@ -97,7 +102,7 @@ for idx in args.data_ids:
         "baseline": np.mean(baseline_scores),
         "autoibc_scores": auto_ibc_scores.tolist(),
         "baseline_scores": baseline_scores.tolist(),
-        "runtime": auto_ibc.runtime,
     }
-    with open(f"results/autoibc-{idx}/{args.seed}/results.json", "w") as f:
+    print(results)
+    with open(f"results/{run_name}/results.json", "w") as f:
         json.dump(results, f)
